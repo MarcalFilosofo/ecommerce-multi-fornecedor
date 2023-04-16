@@ -17,7 +17,7 @@ class CreatePedidoProdutoTable extends Migration
             $table->id();
             $table->integer('pedido_id');
             $table->integer('produto_id');
-            $table->integer('origem_produto');
+            $table->string('origem_produto');
             $table->integer('quantidade_produto');
             $table->integer('preco_venda');
             $table->timestamps();

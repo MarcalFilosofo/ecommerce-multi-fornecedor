@@ -12,7 +12,7 @@ class Pedido extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'usuario_id',
+        'email',
         'forma_pagamento',
         'total',
         'pais',

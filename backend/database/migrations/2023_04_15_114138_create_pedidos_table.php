@@ -16,7 +16,7 @@ class CreatePedidosTable extends Migration
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('usuario_id');
+            $table->string('email');
 
             $table->string('forma_pagamento');
             $table->string('total');
@@ -30,7 +30,6 @@ class CreatePedidosTable extends Migration
             
             $table->timestamps();
 
-            $table->foreign('usuario_id')->references('id')->on('users');
         });
     }
 

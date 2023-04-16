@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PedidoMail;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
@@ -48,7 +49,7 @@ class ProdutoController extends Controller
         ;
 
         // Paginação dos produtos filtrados
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page', 90000);
 
         // Define a página atual com base nos parâmetros da requisição
         $currentPage = LengthAwarePaginator::resolveCurrentPage();        
@@ -59,12 +60,18 @@ class ProdutoController extends Controller
             $filteredProducts->count(),
             $perPage,
             $currentPage,
-            ['path' => $request->url(), 'query' => $request->query()]
+            [
+                'path' => $request->url(), 
+                'query' => $request->query(),
+            ]
         );
-
                 
+        // $pagedData['categorias'] = array_unique($filteredProducts->pluck('categoria')->toArray());
+
         // Retorna a resposta em formato JSON
-        return response()->json($pagedData);
+        return response()->json(
+            $pagedData
+        , 200);
     }
 
     public function getProdutos()
@@ -103,6 +110,7 @@ class ProdutoController extends Controller
             // Adiciona a URL base ao campo "href" de cada produto do segundo endpoint
             $translatedResponse2 = array_map(function ($product) use ($europeanProviderUrl) {
                 $product['href'] = $europeanProviderUrl . $product['id'];
+                $product['origem'] = "UE";
                 return $product;
             }, $response2->json());
 
@@ -112,6 +120,7 @@ class ProdutoController extends Controller
             // Adiciona a URL base ao campo "href" de cada produto do primeiro endpoint
             $translatedResponse1 = array_map(function ($product) use ($brazilianProviderUrl) {
                 $product['href'] = $brazilianProviderUrl . $product['id'];
+                $product['origem'] = "BR";
                 return $product;
             }, $response1->json());
 

@@ -24,8 +24,8 @@ class StorePedidoRequest extends FormRequest
     public function rules()
     {
         return [
-            'usuario_id' => 'required|numeric',
-            'forma_pagamento' => 'required|string|in:cartao_credito,cartao_debito,boleto',
+            'email' => 'required|min:3|max:255',
+            'forma_pagamento' => 'required|string|in:cartao,boleto',
             'endereco_entrega.pais' => 'required|string',
             'endereco_entrega.cidade' => 'required|string',
             'endereco_entrega.bairro' => 'required|string',
@@ -35,7 +35,7 @@ class StorePedidoRequest extends FormRequest
             'endereco_entrega.codigo_postal' => 'required|string',
             'produtos' => 'required|array|min:1',
             'produtos.*.id' => 'required|numeric',
-            'produtos.*.origem' => 'required|in:brazilian,european',
+            'produtos.*.origem' => 'required|in:BR,UE',
             'produtos.*.quantidade' => 'required|numeric|min:1'
         ];
     }

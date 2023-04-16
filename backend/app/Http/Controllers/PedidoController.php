@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Pedido;
 use App\Http\Requests\StorePedidoRequest;
 use App\Http\Requests\UpdatePedidoRequest;
+use App\Mail\PedidoMail;
 use App\Models\PedidoProduto;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 class PedidoController extends Controller
 {
@@ -33,9 +35,6 @@ class PedidoController extends Controller
      */
     public function store(StorePedidoRequest $request)
     {
-        // Obter o usuário que está fazendo o pedido
-        $usuario = User::findOrFail($request->usuario_id);
-
         // Calcular o valor total do pedido
         $total = 0;
         foreach ($request->produtos as $produto) {
@@ -45,11 +44,11 @@ class PedidoController extends Controller
             // URL base dos produtos do brazilian provider
             $brazilianProviderUrl = "http://616d6bdb6dacbb001794ca17.mockapi.io/devnology/brazilian_provider/";
 
-            if ($produto['origem'] == 'brazilian') {
+            if ($produto['origem'] == 'BR') {
                 $dados_produto = Http::get($brazilianProviderUrl.$produto['id'])->json();
 
                 $preco = $dados_produto['preco'];
-            } else if($produto['origem'] == 'european') {
+            } else if($produto['origem'] == 'UE') {
                 $dados_produto = Http::get($europeanProviderUrl.$produto['id'])->json();
 
                 $preco = $dados_produto['price'];
@@ -60,7 +59,7 @@ class PedidoController extends Controller
 
         // Registrar o pedido no banco de dados
         $pedido = Pedido::create([
-            'usuario_id' => auth()->user()->id ?? 1,
+            'email' => $request->email,
             'forma_pagamento' => $request->forma_pagamento,
             'pais' => $request->endereco_entrega['pais'],
             'cidade' => $request->endereco_entrega['cidade'],
@@ -83,8 +82,12 @@ class PedidoController extends Controller
             ]);
         }
 
+        $pedido->itens;
+
+        // Mail::to($request->email)->send(new PedidoMail($pedido));
+
         return response()->json([
-            'pedido' => $pedido::with('itens')
+            'pedido' => $pedido
         ], 200);
     }
 

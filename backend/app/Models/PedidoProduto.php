@@ -16,4 +16,6 @@ class PedidoProduto extends Model
         'quantidade_produto',
         'preco_venda',
     ];
+
+    protected $table = "pedido_produto";
 }
